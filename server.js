@@ -3,6 +3,7 @@ const axios = require('axios');
 const hbs = require('hbs');
 const _ = require('lodash');
 const fs = require('fs');
+const port = process.env.PORT || 8080;
 
 var app = express();
 
@@ -50,20 +51,20 @@ var getCountry = async () => {
     }
 };
 
-app.use((request, response) => {
-    response.render('down.hbs');
-});
-
-// app.use((request, response, next) => {
-//     var time = new Date().toString();
-//     var log = `${time}: ${request.method} ${request.url}`;
-//     fs.appendFile('server.log', log + '\n', (error) => {
-//         if (error) {
-//             console.log('Unable to log message');
-//         }
-//     });
-//     next()
+// app.use((request, response) => {
+//     response.render('down.hbs');
 // });
+
+app.use((request, response, next) => {
+    var time = new Date().toString();
+    var log = `${time}: ${request.method} ${request.url}`;
+    fs.appendFile('server.log', log + '\n', (error) => {
+        if (error) {
+            console.log('Unable to log message');
+        }
+    });
+    next()
+});
 
 app.get('/', (request, response) => {
     response.render('main.hbs', {
@@ -112,6 +113,6 @@ app.get('/currency', async (request, response) => {
     }
 });
 
-app.listen(8080, () => {
-    console.log('Server is up on the port 8080')
+app.listen(port, () => {
+    console.log(`Server is up on the port ${port}`)
 });
